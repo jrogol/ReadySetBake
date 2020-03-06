@@ -1,0 +1,182 @@
+---
+title: "Contact Report Summary"
+subtitle: "`r sprintf('Month of %s',params$endMonth)`"
+author: "`r params$dept`"
+date: "`r format(Sys.Date(),'%d %B %Y')`"
+output:
+  pdf_document
+params:
+  endMonth: "August"
+  dept: "Major Gifts"
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(tidyr)
+library(knitr)
+library(here)
+library(janitor)
+library(kableExtra)
+
+# Set Options for Code Chunks.
+opts_chunk$set(# Hide the Code Chunks
+               echo = F,
+               # Suppress messages and warnings in rendered document.
+               message = F,
+               warning = F)
+```
+
+
+
+```{r getData}
+data <- read_csv(here("Data/contactReports.csv"))
+```
+
+```{r cleanData1, eval = F}
+# Ensure that date is, in fact, a date field.
+data %>% 
+  mutate(date = as.Date(date))
+
+# Dates render as 000101-17. That's not right....
+```
+
+
+```{r cleanData2, eval = F}
+# Using a Month/Day/Year format works, but it doesn't account for future date structures.
+data %>% 
+  mutate(date = as.Date(date,"%m/%d/%y"))
+```
+
+
+```{r cleanData}
+clean <- data %>% 
+  # Consider multiple date formats (in order!) in case the files represent it differently
+  mutate(date = as.Date(date, tryFormats = c("%m/%d/%y","%Y-%m-%d", "%Y/%m/%d")),
+         # Create a month variable with a human-readable name
+         month = factor(format(date, "%B"),
+                        # Set the levels using the built in `month.name` object
+                        levels = month.name,
+                        # As Ordered Factor to see YTD
+                        ordered = T)) %>% 
+  filter(month <= params$endMonth)
+
+deptData <- clean %>% 
+  filter(dept == params$dept)
+```
+
+## Reports filed in `r params$endMonth`, by Type.
+
+```{r byType}
+deptData %>% 
+  filter(month == params$endMonth) %>% 
+  count(staffName, method) %>% 
+  spread(method,n) %>% 
+  adorn_totals() %>% 
+  adorn_totals("col") %>% 
+  rename(" " = staffName)  %>% 
+  kable(format = "latex")
+```
+
+## Reach and Outcomes
+
+```{r byOutcome}
+deptData %>% 
+  select(reportID,staffName, donor,outcome) %>% 
+  mutate(val = T) %>% 
+  spread(outcome, val, fill = F) %>% 
+  group_by(staffName) %>% 
+  summarize(reports = n(),
+            uniqueDonors = n_distinct(donor),
+            positive = sum(Positive),
+            negative = sum(Negative)
+            ) %>% 
+  kable(format = "latex",
+        col.names = c("",
+                      "Reports",
+                      "Unique Donors",
+                      "Positive Outcomes",
+                      "Negative Outcomes"))
+```
+
+
+## Year to Date Summary
+
+```{r ytdPlot}
+YTDmeanRepts <- clean %>% 
+  count(staffName,dept) %>% 
+  summarize(avg = mean(n)) %>% 
+  pull()
+
+deptData %>% 
+  select(staffName,date) %>% 
+  count(staffName,date) %>% 
+  group_by(staffName) %>% 
+  arrange(date) %>% 
+  mutate(cumSum = cumsum(n)) %>% 
+  ggplot(aes(x = date, y = cumSum, color = staffName)) +
+  geom_hline(yintercept = 0, color = "black",size = 1) +
+  geom_point() +
+  geom_line() +
+  geom_hline(yintercept = YTDmeanRepts,
+             linetype = "dashed") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        axis.line.x = element_line(size = 1),
+        axis.line.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(size = 0.5,
+                                          colour = "darkgrey"),
+        plot.background = element_rect(fill = "transparent",
+                                      color = "transparent")) +
+  labs(title = sprintf("Year to Date Activity (%s to %s)",min(deptData$month),max(deptData$month)),
+       x = NULL,
+       y = "Reports Filed",
+       color = "",
+       caption = "The Dotted Line represents the Average number of reports filed across the organization.")
+```
+
+### Report Outcomes to Date
+```{r outcomesPlot}
+deptData %>% 
+  ggplot(aes(x=method, fill = outcome)) +
+  geom_bar() +
+  geom_hline(yintercept = 0, color = "black",size = 1) +
+  facet_grid(~staffName) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        axis.line.x = element_line(size = 1),
+        axis.line.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(size = 0.5,
+                                          colour = "darkgrey"),
+        plot.background = element_rect(fill = "transparent",
+                                      color = "transparent")) +
+  
+  labs(title = "Outcomes, by Type",
+       subtitle = "Year to Date",
+       x = NULL,
+       y = "Count",
+       fill = "Outcome") +
+  scale_fill_manual(values = c("#232D4B","#E57200")) +
+  NULL
+```
+
+
+```{r render, eval=F}
+rmarkdown::render(here("Markdown/1-TheSignature.Rmd"),
+                  output_dir = here("Reports"))
+
+
+rmarkdown::render(here("Markdown/1-TheSignature.Rmd"),
+                  output_dir = here("Reports"),
+                  output_file = "1-TheSignature-AG_Sept",
+                  params = list(endMonth = "September",
+                                dept = "Planned Giving"))
+```
+
