@@ -12,7 +12,7 @@ output:
 params:
   school: "Engineering"
   year: 2020
-  geoType: "MSA"
+  geoType: "CBSA"
 ---
 
 ```{r setup, include=FALSE}
@@ -164,9 +164,9 @@ geo <- glue::glue_sql("{geo*}",.con = con)
 Of the `r scales::comma(nrow(data))` donors in FY `r params$year`, `r scales::comma(nrow(data %>% filter(!is.na(ZIPCODE))))` (`r scales::percent(nrow(data %>% filter(!is.na(ZIPCODE)))/nrow(data))`) have a valid Zip Code.
 
 ```{sql, output.var = "cx_geography"}
--- This SQL query creates a crosswalk between Zip codes and county-level FIPS codes.
--- This data links to Core-Based Statistical Areas (CBSA),
--- Metropolitan Statistical Areas (MSA) and combined Statistical Areas (CSAs).
+-- This SQL query creates a crosswalk between Zip codes and Core-Based 
+-- Statistical Areas (CBSA), Metropolitan Statistical Areas (MSA) and Combined 
+-- Statistical Areas (CSAs) via the 5-digit county-level FIPS code.
 
 -- Note the "output.var" chunk argument, which saves the results as an R object.
 
