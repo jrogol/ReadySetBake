@@ -1,4 +1,4 @@
-![img](https://github.com/jrogol/DRIVE2020/blob/master/Assets/Main.png)
+![img](https://github.com/jrogol/ReadySetBake/blob/master/Assets/Main.png)
 
 
 This repository hosts the materials for the "Ready, Set, Bake: Recipies for Reproducible Reporting in R Markdown" presentation offered at CASE's [DRIVE/ conference](https://www.case.org/drive).
@@ -8,7 +8,7 @@ It takes time and effort to develop one's methods, from developing the initial p
 
 Inspired by "The Great British Bake Off," (GBBO) three increasingly difficult scenarios are presented in which R Markdown can be used to streamline reporting. Tips and tricks will help you acheive the coveted moniker of "Star ~~Baker~~ Analyst."
 
-To download the materials, click the green "Clone or Download" button in the upper right of the repository, and selecting [Download ZIP](https://github.com/jrogol/DRIVE2020/archive/master.zip). 
+To download the materials, click the green "Clone or Download" button in the upper right of the repository, and selecting [Download ZIP](https://github.com/jrogol/DRIVE2020/archive/master.zip).
 
 ## Organization
 
@@ -22,7 +22,7 @@ Files are organized into following folders:
   - [The Technical](https://github.com/jrogol/DRIVE2020/tree/master/Markdown/2-TheTechnical.Rmd)
   - [The Showstopper](https://github.com/jrogol/DRIVE2020/tree/master/Markdown/3-TheShowstopper.Rmd)
 * [R](https://github.com/jrogol/DRIVE2020/tree/master/R/): `.R` files containing R scripts shown during the presentation.
-* [Reports](https://github.com/jrogol/DRIVE2020/tree/master/Reports/): The `pdf`, `html` and `md` files created from the R Markdown documents. See the sections for the individual challenges for more details. 
+* [Reports](https://github.com/jrogol/DRIVE2020/tree/master/Reports/): The `pdf`, `html` and `md` files created from the R Markdown documents. See the sections for the individual challenges for more details.
 
 ## The Data
 
@@ -47,8 +47,9 @@ The presentation focuses on a [report summarizing contact reports](https://githu
 
 ## Challenge no. 2: The Technical
 
-Blancmange(https://en.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_9)#Episode_4:_Desserts)
-Kouign Amann(https://en.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_5)#Episode_7:_Pastry)
+[Blancmange](https://en.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_9)#Episode_4:_Desserts)
+
+[Kouign Amann](https://en.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_5)#Episode_7:_Pastry)
 
 ## Challenge no. 3: The Showstopper
 
@@ -69,7 +70,7 @@ install.packages("keyring")
 install.packages("janitor")
 ```
 
-
+<!--
 library(dplyr)
 library(readr)
 library(ggplot2)
@@ -83,3 +84,4 @@ knitr, rmarkdown, gt.
 forecats, reticulate, ROracle and DBI, odbc
 
 RStudio
+-->
