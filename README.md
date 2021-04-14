@@ -15,22 +15,22 @@ To download the materials, click the green "Clone or Download" button in the upp
 Files are organized into following folders:
 
 * [Assets](https://github.com/jrogol/DRIVE2020/tree/master/Assets): `.pdf` version of the [presentation](https://github.com/jrogol/DRIVE2020/blob/master/Assets/ReadySetBake.pdf) and other images.
-* [Data](https://github.com/jrogol/DRIVE2020/tree/master/Data): Six `csv` files used in throughout the presentation
+* [Data](https://github.com/jrogol/DRIVE2020/tree/master/Data): Six `csv` files used in throughout the presentation and workshop.
   - [data-raw](https://github.com/jrogol/DRIVE2020/tree/master/Data/data-raw): Raw files from which the data were created. For more, see below.
 * [Markdown](https://github.com/jrogol/DRIVE2020/tree/master/Markdown/): Three R Markdown documents, one for each "challenge," along with a CSS file used in "The Showstopper."
   - [The Signature](https://github.com/jrogol/DRIVE2020/tree/master/Markdown/1-TheSignature.Rmd)
   - [The Technical](https://github.com/jrogol/DRIVE2020/tree/master/Markdown/2-TheTechnical.Rmd)
   - [The Showstopper](https://github.com/jrogol/DRIVE2020/tree/master/Markdown/3-TheShowstopper.Rmd)
-* [R](https://github.com/jrogol/DRIVE2020/tree/master/R/): `.R` files containing R scripts shown during the presentation.
+* [R](https://github.com/jrogol/DRIVE2020/tree/master/R/): `.R` files containing R scripts shown during the presentation and workshop.
 * [Reports](https://github.com/jrogol/DRIVE2020/tree/master/Reports/): The `pdf`, `html` and `md` files created from the R Markdown documents. See the sections for the individual challenges for more details.
 
 ## The Data
 
-The files in the [`data/data-raw`]() folder were obtained from the  [Kaggle Fundraising Data set](https://www.kaggle.com/michaelpawlus/fundraising-data), curated by [Michael Pawlus](https://github.com/michaelpawlus).
+The files in the [`data/data-raw`](https://github.com/jrogol/DRIVE2020/tree/master/Data/data-raw) folder were obtained from the  [Kaggle Fundraising Data set](https://www.kaggle.com/michaelpawlus/fundraising-data), curated by [Michael Pawlus](https://github.com/michaelpawlus).
 
 * `data_science_for_fundraising_contact_reports.csv` provides data from 196 anonymized contact reports. Originally included with the [Data Science for Fundraising](http://nandeshwar.info/ds4fundraising/) book by Asutosh Nandeshwar and Rodger Devine.
 * `data_science_for_fundraising_donor_data.csv` contains data for 34,000 anonymized constituents. Originally included with the [Data Science for Fundraising](http://nandeshwar.info/ds4fundraising/).
-* lasala_das_2018.xlsx` was created by Michael Lasala for his presentation _"You Ain't Seen Nothing Yet": Intro to Data Analysis and Visualization in Excel_ at the 2018 Data Analytics Symposium.
+* `lasala_das_2018.xlsx` was created by Michael Lasala for his presentation _"You Ain't Seen Nothing Yet": Intro to Data Analysis and Visualization in Excel_ at the 2018 Data Analytics Symposium.
 
 To better reflect data seen in the wild, the files in the [`data` folder](https://github.com/jrogol/DRIVE2020/tree/master/Data/) were adapted from the above using the [`createData.R` script](https://github.com/jrogol/DRIVE2020/blob/master/Data/data-raw/createData.R).
 
@@ -43,13 +43,19 @@ The presentation focuses on a [report summarizing contact reports](https://githu
 ### Files
 * [1-TheSignature.Rmd](https://github.com/jrogol/DRIVE2020/tree/master/Markdown/1-TheSignature.Rmd)
 * [1-TheSignature.pdf](https://github.com/jrogol/DRIVE2020/tree/master/Reports/1-TheSignature.pdf): A `pdf` report of the initial contact report summary, in this case August reports from Major Gift Officers.
-* [1-TheSignature-AG_Sept.pdf](https://github.com/jrogol/DRIVE2020/tree/master/Reports/1-TheSignature-AG_Sept.pdf): Using parameters, the same `.Rmd` file is quickly amended to produce the same report, only for Annual Giving officers in September.
+* [1-TheSignature-AG_Sept.pdf](https://github.com/jrogol/DRIVE2020/tree/master/Reports/1-TheSignature-AG_Sept.pdf): Using parameters, the same `.Rmd` file is quickly amended to produce the same report, only for Planned Giving officers in September.
 
 ## Challenge no. 2: The Technical
 
-[Blancmange](https://en.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_9)#Episode_4:_Desserts)
+Whereas contestants could perfect their Signature bakes, The Technical is a complete unknown. The judges challenge the bakers to create somewhat obscure dishes, like [Blancmange with Langues du Chat](https://en.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_9)#Episode_4:_Desserts) or [Kouign Amann](https://en.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_5)#Episode_7:_Pastry).
+To further test one's baking acumen, the recipes given to contestants are intentionally vague. The list of ingredients could omit measurements, or simply request one "Bake" the dish, without listing a time nor temperature.
 
-[Kouign Amann](https://en.wikipedia.org/wiki/The_Great_British_Bake_Off_(series_5)#Episode_7:_Pastry)
+This challege is not unlike troubleshooting a poorly-documented project inherited from a colleague (or one's past self!), or starting a new analysis from scratch.
+
+* Analysis plan in a document.
+* Working through roadblocks and decisions through prose alonside the code, not just the code speaking for itself.
+* Simple, focused chunks of code
+* Functions for reuseability.
 
 ## Challenge no. 3: The Showstopper
 
