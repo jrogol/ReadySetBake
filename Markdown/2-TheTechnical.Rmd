@@ -83,13 +83,13 @@ basicReport %>%
   separate(donor_code, into = c("type","subtype"))
 ```
 
-This approach ulitmately didn't work, as "Non-Degreed" was reduced to "Non" (as the string was split on the hyphen.).
+This approach ultimately didn't work, as "Non-Degreed" was reduced to "Non" (as the string was split on the hyphen.).
 
 Instead, we'll use `forcats::fct_relabel()` to combine some codes into a new factor level.
 
 ```{r cleanDonor2}
 
-# Create a functon that keeps lumps alums together, except for Non-Degreed Alumni. 
+# Create a function that keeps lumps alums together, except for Non-Degreed Alumni. 
 convertDonor <- function(x) {
  range <- !grepl("Alumni",x) | grepl("Non-Degreed",x)
  
@@ -214,7 +214,7 @@ With the data in order, we can start building models. We will consider a Logisti
 
 ### Logistic Model
 
-We can build a basic [logistic regression]http://r-statistics.co/Logistic-Regression-With-R.html) model with the `glm()` function.
+We can build a basic [logistic regression](http://r-statistics.co/Logistic-Regression-With-R.html) model with the `glm()` function.
 
 ### Random Forest
 
