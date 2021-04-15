@@ -84,13 +84,15 @@ As an added bonus, a [short `R` script](https://github.com/jrogol/ReadySetBake/b
 
 ## Dependencies
 
-The [`rmarkdown`](https://rmarkdown.rstudio.com/) package is an integral part of the presentationa and workshop, providing the ability to create dynamic reports with built-in code.
+The [`rmarkdown`](https://rmarkdown.rstudio.com/) package is an integral part of the presentation and workshop, providing the ability to create dynamic reports with built-in code.
 They also make use of many [`tidyverse`](https://www.tidyverse.org/) packages, particularly `dplyr`.
 
 The [`here`](https://here.r-lib.org/) package can aid in heuristically locating files during an analysis.
 Jenny Bryan's [_Ode to the here package_ ](https://github.com/jennybc/here_here) gives an excellent overview of how to use it.
 Additionally, the [`keyring`](https://github.com/r-lib/keyring) package offers a way to utilize password protected resources without embedding the password in scripts.
 Lastly, [`janitor`](http://sfirke.github.io/janitor/) provided functions for preprocessing the data, primarily when standardizing column names.
+
+Additional packages used include [`gt`](https://gt.rstudio.com/) and [`kableExtra`](https://github.com/haozhu233/kableExtra) for tables; [`reticulate`](https://rstudio.github.io/reticulate/) for interacting with python; [`DBI`](https://db.rstudio.com/dbi) and [`RSQLite`](https://github.com/r-dbi/RSQLite) for database operations.
 
 These packages can be installed using the following code:
 ```r
@@ -99,5 +101,9 @@ install.packages("tidyverse")
 install.packages("here")
 install.packages("keyring")
 install.packages("janitor")
+install.packages("gt")
+install.packages("kableExtra")
+install.packages("DBI")
+install.packages("RSQLite")
+install.packages("reticulate") # NOTE: Requires a python installation.
 ```
-Additional packages used include [`gt`](https://gt.rstudio.com/) and [`kableExtra`](https://github.com/haozhu233/kableExtra) for tables; [`reticulate`](https://rstudio.github.io/reticulate/) for interacting with python; [`DBI`](https://db.rstudio.com/dbi) and [`RSQLite`](https://github.com/r-dbi/RSQLite) for database operations.
