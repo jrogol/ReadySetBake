@@ -100,4 +100,4 @@ install.packages("here")
 install.packages("keyring")
 install.packages("janitor")
 ```
-Additional packages used include [`gt`](https://gt.rstudio.com/) and [`kableExtra`](https://github.com/haozhu233/kableExtra) for tables; [`reticulate`](https://rstudio.github.io/reticulate/) for interacting with python; and [`DBI`](https://db.rstudio.com/dbi) and [`RSQLite`](https://github.com/r-dbi/RSQLite) for database operations.
+Additional packages used include [`gt`](https://gt.rstudio.com/) and [`kableExtra`](https://github.com/haozhu233/kableExtra) for tables; [`reticulate`](https://rstudio.github.io/reticulate/) for interacting with python; [`DBI`](https://db.rstudio.com/dbi) and [`RSQLite`](https://github.com/r-dbi/RSQLite) for database operations.
