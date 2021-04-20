@@ -1,0 +1,459 @@
+---
+title: "FY `r params$year` Giving Profile"
+subtitle: "School of `r params$school` Alumni"
+date: "`r format(Sys.Date(),'%d %B %Y')`"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+    css: report.css
+    theme: cosmo
+params:
+  school: "Engineering"
+  year: 2020
+  geoType: "CBSA"
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+# Currently in development
+library(gt)
+
+library(here)
+library(keyring)
+
+library(reticulate)
+
+# For a database connection
+library(DBI)
+
+knitr::opts_chunk$set(echo = FALSE,
+                      message = F,
+                      warning = F,
+                      fig.showtext = TRUE,
+                      # dpi = 72,
+                      # The SQL connection needs to be passed to any SQL chunks,
+                      # and can be set here.
+                      connection = "con"
+                      )
+```
+
+
+```{r setup2, include=FALSE, eval = F}
+#### This establishes the connection to a SQL database. 
+
+# Instead of displaying the connection information in free text: 
+# connect(host = "my.server", user = "usr","password = "12345")
+# Instead, it's wrapped in a custom function. The password itself 
+# is stored in a keyring, and is *never* displayed.
+
+con <- advancementtools::cx_Oracle(usr = "BI",
+                                   pw = key_get("advance","BI","adv"))
+
+
+knitr::opts_chunk$set(echo = FALSE,
+                      message = F,
+                      warning = F,
+                      fig.showtext = TRUE,
+                      # dpi = 72,
+                      # The SQL connection needs to be passed to any SQL chunks,
+                      # and can be set here.
+                      connection = "con"
+                      )
+```
+
+<!-- HTML documents can include HTML code in the body of the document, and will render appropriately 
+     In this case, we're adding a logo to the header above the table of contents. 
+
+<script>
+  /* Add Logo Header using JQuery*/
+  $(document).ready(function() {
+    $('#TOC').parent().prepend('<div id=\"nav_logo\"><img src=\"https://brand.virginia.edu/sites/default/files/styles/embedded_image_medium_2x/public/2017-08/rev_uva_logo_color.png\"></div>');
+  });
+</script>
+-->
+
+```{js}
+  /* Add Logo Header using JQuery*/
+  $(document).ready(function() {
+    $('#TOC').parent().prepend('<div id=\"nav_logo\"><img src=\"https://brand.virginia.edu/sites/default/files/styles/embedded_image_medium_2x/public/2017-08/rev_uva_logo_color.png\"></div>');
+  });
+```
+
+
+## Overview
+
+```{r loadData}
+# Get the Biographic details
+bio <- read_csv(here("Data/donorBio.csv")) %>% 
+  # Only Alumni have a SCHOOL, replace missing values
+  mutate(SCHOOL = replace_na(SCHOOL,"Non-Alumni"),
+         # Format the Name for Display
+         schoolName = gsub("Arts and Sciences","A&S",SCHOOL),
+         # Create a variable for highlighting later on.
+         highlight = factor(if_else(SCHOOL == params$school,"Y","N"),
+                            levels = c("N","Y")))
+
+# Read in the Giving information
+giving <- read_csv(here("Data/newYrGiving.csv")) %>%
+  # parameters can be accessed by `params${name}`
+  filter(year == params$year)
+
+# Join the biographic and giving data together
+data <- bio %>% 
+  inner_join(giving, by = "ID")
+
+```
+
+`r scales::comma(data %>% filter(SCHOOL == params$school) %>% nrow())` Alumni from the School of `r params$school` gave in the `r params$year` Fiscal Year. This accounts for `r scales::percent((data %>% filter(SCHOOL == params$school) %>% nrow())/nrow(data))` of donor participation.
+
+
+```{r customTheme}
+# Rather than copy and past all of the Theme elements for a ggplot2 element,
+# save them as a pseudo-function.
+
+customTheme <- theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        plot.margin=unit(c(1,1,1,1),"cm"),
+        axis.text = element_text(size = 20),
+        axis.line.x = element_line(size = 1),
+        axis.line.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(size = 0.5,
+                                          colour = "darkgrey"),
+        plot.background = element_rect(fill = "transparent",
+                                      color = "transparent"))
+
+```
+
+
+```{r plotDemo, eval = F}
+data %>% 
+  ggplot(aes(x = schoolName, fill = highlight)) +
+  geom_histogram(stat = "count") +
+  coord_flip() +
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        plot.margin=unit(c(1,1,1,1),"cm"),
+        axis.text = element_text(size = 20),
+        axis.line.x = element_line(size = 1),
+        axis.line.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(size = 0.5,
+                                          colour = "darkgrey"),
+        plot.background = element_rect(fill = "transparent",
+                                      color = "transparent")) +
+  labs(x=NULL, y=NULL,
+       title = "Donor Participation") +
+  scale_y_continuous(labels = scales::comma) +
+  geom_hline(yintercept = 0,size = 1, color = "black") +
+  scale_fill_manual(values = c("#232D4B","#E57200"))
+
+
+dollars %>% 
+  ggplot(aes(x = schoolName, y = total, fill = highlight)) +
+  geom_histogram(stat="identity") + 
+  labs(x=NULL, y=NULL,
+       title = "Dollars Raised (log scale)") +
+  coord_flip() +
+  theme_minimal() +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        plot.margin=unit(c(1,1,1,1),"cm"),
+        axis.text = element_text(size = 20),
+        axis.line.x = element_line(size = 1),
+        axis.line.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(size = 0.5,
+                                          colour = "darkgrey"),
+        plot.background = element_rect(fill = "transparent",
+                                      color = "transparent"))  + 
+  theme(axis.text.y = element_blank(),
+        axis.line.x = element_line(size = 1)) +
+  geom_hline(yintercept = 1,size = 1, color = "black") +
+  scale_y_log10(breaks = 10^(0:9),
+    labels = c("$0","$10","$100",
+               "$1K","$10K","$100K",
+               "$1M","$10M","$100M","$1T")) +
+  geom_text(aes(label = scales::dollar(total),
+                color = highlight),
+            size = 5, hjust= 1.2) +
+  scale_fill_manual(values = c("#232D4B","#E57200")) +
+  scale_color_manual(values = c("white","#232D4B"))
+
+```
+
+
+
+```{r basicPlots, fig.width=12}
+countPlot <- data %>% 
+  ggplot(aes(x = schoolName, fill = highlight)) +
+  geom_histogram(stat = "count") +
+  coord_flip() +
+  customTheme +
+  labs(x=NULL, y=NULL,
+       title = "Donor Participation") +
+  scale_y_continuous(labels = scales::comma) +
+  geom_hline(yintercept = 0,size = 1, color = "black") +
+  scale_fill_manual(values = c("#232D4B","#E57200"))
+
+dollars <- data %>%
+  group_by(schoolName,highlight) %>% 
+  summarize(total = sum(giving))
+
+dollarsPlot <-  dollars %>% 
+  ggplot(aes(x = schoolName, y = total, fill = highlight)) +
+  geom_histogram(stat="identity") + 
+  labs(x=NULL, y=NULL,
+       title = "Dollars Raised (log scale)") +
+  coord_flip() +
+  customTheme + 
+  theme(axis.text.y = element_blank(),
+        axis.line.x = element_line(size = 1)) +
+  geom_hline(yintercept = 1,size = 1, color = "black") +
+  scale_y_log10(breaks = 10^(0:9),
+    labels = c("$0","$10","$100",
+               "$1K","$10K","$100K",
+               "$1M","$10M","$100M","$1T")) +
+  geom_text(aes(label = scales::dollar(total),
+                color = highlight),
+            size = 5, hjust= 1.2) +
+  scale_fill_manual(values = c("#232D4B","#E57200")) +
+  scale_color_manual(values = c("white","#232D4B"))
+
+gridExtra::grid.arrange(countPlot,dollarsPlot,ncol = 2)
+```
+
+
+## By Region
+
+```{r SQLprep}
+# Create a temporary SQLite database in memory. It will be cleared once disconnected.
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+```
+
+
+```{r dummy1, eval = F}
+# Nothing exists yet! Let's create come new tables.
+dbListTables(con)
+```
+
+
+```{r SQLprep2}
+# Read in the data
+geoTab <- readr::read_csv(here::here("Data/cx_geo.csv"))
+zipTab <- readr::read_csv(here::here("Data/cx_zip.csv"))
+
+# Write the Data to new tables
+dbWriteTable(conn = con,
+             name = "cx_geo",
+             geoTab)
+
+dbWriteTable(conn = con,
+             name = "cx_zip",
+             zipTab)
+
+
+```
+
+
+```{r sqlPlayground, eval = F}
+dbListTables(con)
+
+# Enter zipcode as a string, otherwise leading zeroes will be truncated
+zip <- "22904"
+
+# Sample Query
+q <- glue::glue_sql("SELECT * FROM cx_zip WHERE zip = {zip}", .con = con)
+# See results!
+q
+
+# Fetch Results
+dbGetQuery(q,conn = con)
+```
+
+
+
+```{r geoPrep}
+geoType <- params$geoType
+
+# While not used here, the `glue` package can properly format multiple arguments
+# for injection into a SQL chunk.
+geo <- data %>% 
+  filter(!is.na(ZIPCODE)) %>% 
+  distinct() %>% 
+  pull(ZIPCODE)
+
+# Use {var*} to unnest a vector.
+geo <- glue::glue_sql("{geo*}",.con = con)
+```
+
+Of the `r scales::comma(nrow(data))` donors in FY `r params$year`, `r scales::comma(nrow(data %>% filter(!is.na(ZIPCODE))))` (`r scales::percent(nrow(data %>% filter(!is.na(ZIPCODE)))/nrow(data))`) have a valid Zip Code.
+
+```{sql, output.var = "cx_geography"}
+-- This SQL query creates a crosswalk between Zip codes and Core-Based 
+-- Statistical Areas (CBSA), Metropolitan Statistical Areas (MSA) and Combined 
+-- Statistical Areas (CSAs) via the 5-digit county-level FIPS code.
+
+-- Note the "output.var" chunk argument, which saves the results as an R object.
+
+WITH geo as (
+    SELECT  FIP5
+            ,title
+            ,geography
+    FROM    cx_geo
+    )
+
+
+SELECT      DISTINCT ZIP            ZIPCODE
+            ,title
+FROM        cx_zip
+INNER JOIN  geo
+USING       (FIP5)
+-- SQL chunks can use R variables using `?{variable_name}`
+WHERE       geography = ?geoType
+```
+
+```{r crosswalk}
+# Combine the data with the crosswalks obtained by SQL
+combo <- data %>% 
+  left_join(cx_geography, by = "ZIPCODE") %>% 
+  # A Zip code may have multiple matches, this creates one row per Zip.
+  group_by(ZIPCODE) %>% 
+  slice(1) %>%
+  ungroup()
+
+
+topN <- 10
+```
+
+`r scales::comma(nrow(combo %>% filter(is.na(title))))` entities reside outside of a `r geoType`. The table below shows the top `r topN` regions by count.
+
+```{r topGeo}
+comboTable <- combo %>% 
+  filter(!is.na(title)) %>% 
+  count(title,highlight, sort = T) %>% 
+  spread(highlight, n, fill = 0)
+
+# Error Handling for when No alumni participated
+if (!"Y" %in% names(comboTable)){
+  comboTable$Y = 0
+}
+
+comboTable <- comboTable %>% 
+  mutate(total = Y+N,
+         per = Y/total) %>% 
+  arrange(desc(Y),total) %>% 
+  slice(1:topN)
+
+comboTable %>% 
+  gt() %>% 
+  cols_hide(columns = vars(N)) %>% 
+  cols_label(title = params$geoType,
+             Y = "Alumni",
+             total = "Total Donors",
+             per = "Alumni %") %>% 
+  fmt_percent(columns = vars(per),
+              decimals = 0) %>% 
+  tab_header(title = md(sprintf("School of **%s** Alumni",params$school)),
+             subtitle = sprintf("Donor Participation in FY %i",params$year))
+  
+  
+```
+
+**`r comboTable$title[1]`** was the `r params$geoType` with the most number of `r params$school` alumni donors (`r comboTable$Y[1]`).
+
+```{python geoHist}
+import pandas as pd
+import numpy as np
+
+np.random.seed(2020)
+
+titles = r.combo['title'].value_counts()
+
+# Remove NA values
+t2 = titles.drop('NA')
+
+pl = t2.plot.hist(figsize = (14,8),
+                  title = "%s Histogram" % (r.geoType),
+                  color = '#232D4B')
+
+pl.set_xlabel("Entites per %s" % (r.geoType))
+
+# pl.show()
+```
+
+`r scales::comma(py$titles["NA"])` individuals do __not__ have a valid `r geoType`.
+
+```{r geoTable}
+geoTable <- table(py$titles)
+
+
+maxRegions <- names(geoTable[geoTable == max(geoTable)])
+```
+
+`r scales::percent(sum(geoTable[geoTable == max(geoTable)])/sum(geoTable))` of regions have `r paste(names(geoTable[geoTable == max(geoTable)]),collapse = " or ")` `r if(maxRegions == 1){"entity"}else{"entities"}`
+
+## Session Info
+
+Analysis and Report generated on `r sessionInfo()[["running"]]` using `r sessionInfo()[["R.version"]]$version.string`.
+
+```{r packageList, results='asis'}
+# Results = 'asis' renders the output as if it were text in the markdown doc. In
+# this case, the script renders as a bulletted list.
+
+# Get a list of attached packages
+packages <- sessioninfo::package_info()
+
+# Combine Package name and version number
+p <- sprintf("%s (%s)",
+             packages$package[packages$attached == T],
+             packages$loadedversion[packages$attached == T])
+
+# Iterate over the packages, adding a hyphen and space at the start of the string
+# (to create a bulletted list) and a new line character at the end of the string
+# to list each package as a new bullet point.
+for (x in p) {
+  cat("- ", x, "\n")
+}
+
+# This process is wrapped in a function include in an in-house r package:
+# advancementtools::sessionStats()
+
+```
+
+<!-- Insert Footnotes Below -->
+```{r disconnnect,results='hide'}
+dbDisconnect(con)
+```
+
+
+```{r render, eval = F}
+rmarkdown::render(here("Markdown/Workshop-TheShowstopper.Rmd"),
+                  output_file = "workshopShowstopper.html",
+                  output_dir = here("Reports"),
+                  quiet = T)
+```
+
+
+```{css}
+body {
+  font-family: 'Montserrat';
+  font-size: 10pt;
+}
+/* Add Dotted horizontal Rule */
+h2,h3 {
+  border-bottom: 2px dotted #E57200;
+  width: 75%;
+  padding-bottom: 4px;
+}
+```
+
