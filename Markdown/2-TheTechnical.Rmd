@@ -236,7 +236,7 @@ p <- sprintf("%s (%s)",
              packages$package[packages$attached == T],
              packages$loadedversion[packages$attached == T])
 
-# Iterate over the packages, adding a hypen and space at the start of the string
+# Iterate over the packages, adding a hyphen and space at the start of the string
 # (to create a bulletted list) and a new line character at the end of the string
 # to list each package as a new bullet point.
 for (x in p) {
