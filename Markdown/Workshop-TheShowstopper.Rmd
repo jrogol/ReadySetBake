@@ -6,8 +6,8 @@ output:
   html_document: 
     toc: yes
     toc_float: yes
+    keep_md: false
     css: report.css
-    theme: cosmo
 params:
   school: "Engineering"
   year: 2020
