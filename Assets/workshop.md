@@ -58,13 +58,13 @@
         - See `include=FALSE` in the `setup` chunk or `echo=FALSE` in the `pressure` chunk
         - Clicking the gear icon in the GUI for a sparticular chunk will also show the options.
     - Insertion (command/control + shift + i, or GUI)
-      - Create a chunk named `paramsTest`:
-              ```r
-              params$x
-              params$y
+      - Create a chunk named `paramsTest`
+          ```r
+          params$x
+          params$y
 
-              roundTo <- 2
-              ```
+          roundTo <- 2
+          ```
       - Set to `echo = FALSE` to _not_ print the code.
     - Execution of chunks.
       - One Line: cmd/ctrl + Enter
@@ -131,7 +131,6 @@
       - re-run in place
         - duplicate the chunk and run in place.
         - knit again.
-        Generate several random samples
 
         ```{r random}
         sample(1:10,2,T)
